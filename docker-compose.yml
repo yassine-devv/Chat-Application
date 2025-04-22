@@ -1,0 +1,52 @@
+services:
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_DEFAULT_VHOST=/
+      - RABBITMQ_LOOPBACK_USERS=none
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI
+      - "61613:61613"  # STOMP
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 15s
+      retries: 10
+    command: >
+      bash -c "
+        rabbitmq-plugins enable --offline rabbitmq_stomp &&
+        rabbitmq-plugins enable --offline rabbitmq_web_stomp &&
+        rabbitmq-server
+      "
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_app_net
+    restart: unless-stopped
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webapp
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin
+    ports:
+      - "8080:8080"
+    networks:
+      - rabbitmq_app_net
+
+networks:
+  rabbitmq_app_net:
+    driver: bridge
