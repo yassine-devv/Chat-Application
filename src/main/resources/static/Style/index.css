@@ -1,0 +1,86 @@
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 85vh;
+}
+
+#title-chat{
+    font-size: larger;
+    font-weight:bolder;
+}
+
+.list-users-connected{
+    height: 250px;
+    overflow-y: scroll;
+}
+
+.image-profile {
+    font-size: 15pt;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #ffffff;
+    margin-right: 2%;
+    align-content: center;
+    text-align: center;
+}
+
+.child-tab-users-connected {
+    width: 20%;
+    /* border: 1px solid black; */
+    margin: auto;
+    padding: 1%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 10px;
+    margin-top: 5%;
+}
+
+.header-users-connected {
+    margin-bottom: 5%;
+    font-size: large;
+    font-weight: bold;
+}
+
+.single-user{
+    display: flex;
+    align-items: center;
+    margin-top: 3%;
+}
+
+.modal{
+    display: none;
+}

@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+
 import static com.example.chat_app.config.RabbitMqConfig.EXCHANGE_FANOUT;
 
 @Slf4j
@@ -29,7 +31,7 @@ public class FanoutProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendMessage(Message mess) {
+    public void sendMessage(HashMap<String, String> mess) {
         try {
             String json = objectMapper.writeValueAsString(mess);
             rabbitTemplate.convertAndSend(EXCHANGE_FANOUT, "", json);

@@ -22,12 +22,28 @@ services:
         rabbitmq-plugins enable --offline rabbitmq_web_stomp &&
         rabbitmq-server
       "
-    volumes:
-      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
       - rabbitmq_app_net
-    restart: unless-stopped
+
+  postgresdb:
+    image: postgres:latest
+    container_name: postgresdb
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "admin", "-d", "chat_app" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=chat_app
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init_db:/docker-entrypoint-initdb.d
+    networks:
+      - rabbitmq_app_net
 
   webapp:
     build:
@@ -35,6 +51,8 @@ services:
       dockerfile: Dockerfile
     container_name: webapp
     depends_on:
+      postgresdb:
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
@@ -42,10 +60,17 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=admin
       - SPRING_RABBITMQ_PASSWORD=admin
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresdb:5432/chat_app
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
     ports:
       - "8080:8080"
     networks:
       - rabbitmq_app_net
+
+
+volumes:
+  pgdata:
 
 networks:
   rabbitmq_app_net:

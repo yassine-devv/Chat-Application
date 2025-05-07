@@ -1,52 +1,47 @@
 package com.example.chat_app.controller;
 
+import com.example.chat_app.entities.Message;
+import com.example.chat_app.entities.User;
+import com.example.chat_app.service.*;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class PageController {
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RestService restService;
+
     @GetMapping("/")
-    public String showAllBooks() {
+    public String home(HttpSession session, Model model) {
+        String username = (String) session.getAttribute("username");
+        model.addAttribute("username", username);
         return "index";
     }
 
-    @PostMapping("/{username}")
-    public ResponseEntity<String> chat(@PathVariable String username){
-        return ResponseEntity.ok().header("Content-Type", "text/vnd.turbo-stream.html")
-                .body("""
-                    <turbo-stream action="remove" target="usernameForm"></turbo-stream>
-                    <turbo-stream action="remove" targets=".area-user-connected"></turbo-stream>
-                    <turbo-stream action='update' target="area-chat">
-                        <template>
-                            <span id="consumer"><b>%s</b></span></br></br>
-                            <div id="area-messages"></div>
-                            <form id="sendMessageForm" name="sendMessageForm">
-                                <input type="text" id="message" placeholder="Scrivi un messaggio..." autocomplete="off" class="form-control"/>
-                                <button type="submit" class="accent message-submit">Invia</button>
-                            </form>
-                            <script>
-                                document.getElementById("sendMessageForm").onsubmit = function(e) {
-                                    e.preventDefault();
-                                    const message = document.getElementById("message").value.trim();
-                                    const consumer = document.getElementById("consumer").textContent;
-                                    if (message && window.stompClient) {
-                                        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({
-                                            producer: window.username,
-                                            consumer: consumer,
-                                            content: message,
-                                            typeMessage: "CHAT"
-                                        }));
-                                        document.getElementById("area-messages").innerHTML += `<span>Tu: ${message}</span></br>`
-                                    }
-                                    this.reset();
-                                };
-                            </script>
-                        </template>
-                    </turbo-stream>
-                """.formatted(username));
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+
+    @GetMapping("/signup")
+    public String register(){
+        return "signup";
     }
 }

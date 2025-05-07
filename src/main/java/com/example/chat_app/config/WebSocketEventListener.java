@@ -2,6 +2,7 @@ package com.example.chat_app.config;
 
 import com.example.chat_app.entities.Message;
 import com.example.chat_app.rabbit.FanoutProducer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +50,14 @@ public class WebSocketEventListener {
             userTracker.removeUser(username);
         }
 
-        fanoutProducer.sendMessage(new Message(userTracker.getConnectedUsers().toString(), "SERVER", "all", "LEFT"));
+        HashMap<String, String> leftMessageToSend = new HashMap<>();
+
+        leftMessageToSend.put("content", userTracker.getConnectedUsers().toString());
+        leftMessageToSend.put("producer", "SERVER");
+        leftMessageToSend.put("consumer", "all");
+        leftMessageToSend.put("typeMessage", "LEFT");
+
+        fanoutProducer.sendMessage(leftMessageToSend);
 
         System.out.println(username+" si è disconnesso");
     }

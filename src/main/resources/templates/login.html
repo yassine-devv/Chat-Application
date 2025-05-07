@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<form th:action="@{/login}" method="post">
+    <label for="input-username">Username:</label>
+    <input type="text" name="username" id="input-username" placeholder="Username"/> <br>
+
+    <label for="input-password">Password:</label>
+    <input type="password" name="password" id="input-password" placeholder="Password" /> <br>
+
+    <input type="submit" value="Login">
+
+    <div class="dialog-row">
+        <label th:if="${param.error}" th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}" style="color: red"></label>
+    </div>
+</form>
+</body>
+</html>
