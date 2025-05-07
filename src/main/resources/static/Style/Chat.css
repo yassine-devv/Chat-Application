@@ -80,7 +80,7 @@ div#sec-title-chats {
 }
 
 #area-messages {
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 form#sendMessageForm {

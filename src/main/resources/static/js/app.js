@@ -130,6 +130,15 @@ function openTab(tabName) {
         document.getElementById(tabName).style.display = "block";
     }
 
+    /*if(tabName !== "Chat"){
+        let areaChat = document.getElementById("area-chat");
+        let headerUsername = document.querySelector(".header-username");
+        let areaMessages = document.querySelector(".header-username");
+        if (parentDiv.contains(childDiv)) {
+            alert("yes");
+        }
+    }*/
+
     document.getElementsByClassName("tabcontent")[0].classList.add("active");
 }
 
