@@ -225,12 +225,22 @@ public class RestChatController {
         return usernameList;
     }
 
-    @GetMapping(value = "/getYourUsername", produces = "application/json")
-    public List<String> getYourUsername(HttpSession session){
-        List<String> username = new ArrayList<>();
+    /*
+    funzione che torna una lista con gli username degli utenti che hanno la chat con lo user connesso
+    */
+    @PostMapping(value = "/getUsersWithChat", produces = "application/json")
+    private List<String> getUsersWithChat(HttpSession session){
+        return restService.getUsersWithChat(Long.parseLong(String.valueOf(session.getAttribute("id"))));
+    }
 
-        username.add(String.valueOf(session.getAttribute("username")));
+    @PostMapping(value = "/sendInvitation", produces = "application/json")
+    public List<String> sendInvitation(@RequestBody String usernameInvitee, HttpSession session){
+        usernameInvitee = usernameInvitee.substring(1, usernameInvitee.length() - 1); //rimuovo i doppi apici
 
-        return username;
+        System.out.println(usernameInvitee);
+
+        restService.saveInvitation(usernameInvitee, session);
+
+        return null;
     }
 }

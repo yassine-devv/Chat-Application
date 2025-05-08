@@ -1,13 +1,12 @@
 package com.example.chat_app.service;
 
-import com.example.chat_app.entities.Chat;
-import com.example.chat_app.entities.Message;
-import com.example.chat_app.entities.MessageDTO;
-import com.example.chat_app.entities.User;
+import com.example.chat_app.entities.*;
 import com.example.chat_app.repository.ChatRepository;
+import com.example.chat_app.repository.InvitationRepository;
 import com.example.chat_app.repository.MessageRepository;
 import com.example.chat_app.repository.UserRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,9 @@ public class RestService {
 
     @Autowired
     private ChatRepository chatRepository;
+
+    @Autowired
+    private InvitationRepository invitationRepository;
 
     public List<Long> chatsUtentiPartecipano(List<Long> userIds) {
         String sql = """
@@ -63,7 +65,7 @@ public class RestService {
         return chat;
     }
 
-    public Message save(MessageDTO messageDTO){
+    public Message saveMessage(MessageDTO messageDTO){
         //ricavo l'oggeto user producer con id
         Optional<User> userProducer = userService.findById(messageDTO.getProducerId());
 
@@ -143,4 +145,51 @@ public class RestService {
         return userRepository.findById(id);
     }
 
+    public List<String> getUsersWithChat(Long id){
+        String sql = """
+                SELECT DISTINCT u.username AS other_username 
+                FROM participants p1 JOIN participants p2 ON p1.id_chat = p2.id_chat JOIN users u ON p2.id_user = u.id JOIN chats c ON c.id = p1.id_chat 
+                WHERE p1.id_user = :idUser AND p2.id_user != :idUser;
+                """;
+
+        List<String> result = entityManager.createNativeQuery(sql)
+                .setParameter("idUser", id)
+                .getResultList();
+
+        return result;
+    }
+
+    public void saveInvitation(String usernameInvitee, HttpSession session) {
+        /*
+         * 1)estrarre l'oggetto user invitato
+         * 2)estrarre l'oggetto user stesso
+         * */
+
+        Optional<User> userInviteeObj = userService.findByUsername(usernameInvitee);
+
+        User userInvitee = null;
+
+        if(userInviteeObj.isPresent()){
+            userInvitee = userInviteeObj.get();
+        }
+
+        //user stesso
+        Optional<User> userInviterObj = userService.findByUsername(String.valueOf(session.getAttribute("username")));
+
+        User userInviter = null;
+
+        if(userInviterObj.isPresent()){
+            userInviter = userInviterObj.get();
+        }
+
+        if(userInviter != null && userInvitee != null){
+            Invitation invitation = new Invitation();
+            invitation.setInviter(userInviter);
+            invitation.setInvitee(userInvitee);
+            invitation.setStatus(Status.PENDING);
+
+            invitationRepository.save(invitation);
+        }
+
+    }
 }

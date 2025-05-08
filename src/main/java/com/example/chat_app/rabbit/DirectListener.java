@@ -1,21 +1,16 @@
 package com.example.chat_app.rabbit;
-import com.example.chat_app.entities.Message;
 import com.example.chat_app.entities.MessageDTO;
 import com.example.chat_app.entities.User;
 import com.example.chat_app.service.RestService;
 import com.example.chat_app.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 @Slf4j
@@ -57,7 +52,7 @@ public class DirectListener {
 
             messagingTemplate.convertAndSend(topic, message);
 
-            restService.save(message);
+            restService.saveMessage(message);
 
             System.out.println("Messaggio ricevuto: "+message.toString());
 

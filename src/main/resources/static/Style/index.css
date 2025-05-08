@@ -128,11 +128,10 @@ body {font-family: Arial;}
 }*/
 
 .single-user {
+    padding: 7px;
     display: flex;
     align-items: center;
-    margin-top: 3%;
     color: lightgray;
-    margin-left: 4%;
 }
 
 .alert{
@@ -147,4 +146,11 @@ body {font-family: Arial;}
 
 span#span-no-user-connected {
     color: lightgray;
+}
+
+.btn-invite{
+    margin-right: 2%;
+    margin-left: auto;
+    padding: 4px 7px;
+    box-shadow: rgb(188 183 183 / 20%) 0px 2px 8px 0px;
 }

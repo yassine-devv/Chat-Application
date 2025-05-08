@@ -190,7 +190,6 @@ function openTab(tabName) {
 function setHtmlForUserConnected(){
     let arrColors = ['00CCCC', '0066CC', '80FF00', '00FF00', 'FF90CC', 'CC6600'];
 
-    let html = ``;
 
     if(usersConnected.length===1 && usersConnected[0]===username){
         document.querySelector(".list-users-connected").style.textAlign = "center";
@@ -203,20 +202,63 @@ function setHtmlForUserConnected(){
         if(listUsersConnected.style.textAlign == "center"){
             listUsersConnected.style.removeProperty("text-align");
         }
-        //document.querySelector(".list-users-connected").style.textAlign = "center";
-        for(let i=0; i<usersConnected.length; i++){
-            if(usersConnected[i] !== username){
-                let generatedAvatar = generaAvatar(usersConnected[i]);
-                html += `
-                    <div class="single-user">
-                        <div class="image-profile" style="background-color: #${generatedAvatar.backgroundColor};"><span>${generatedAvatar.firstChar}</span></div>
-                        <span>${usersConnected[i]}</span>
-                    </div>
-                `;
+
+        getUsersWithChat().then(data => {
+            console.log(data);
+
+            let html = ``;
+
+            for(let i=0; i<usersConnected.length; i++){ //itero l'array degli utenti connessi
+                if(usersConnected[i] !== username){ //controllo se l'utente i non l'utente stesso per non farlo apparire
+                    let generatedAvatar = generaAvatar(usersConnected[i]);
+
+                    if(data.includes(usersConnected[i])){
+                        html += `
+                            <div class="single-user">
+                                <div class="image-profile" style="background-color: #${generatedAvatar.backgroundColor};"><span>${generatedAvatar.firstChar}</span></div>
+                                <span>${usersConnected[i]}</span>
+                            </div>
+                        `;
+                    }else{
+                        html += `
+                            <div class="single-user">
+                                <div class="image-profile" style="background-color: #${generatedAvatar.backgroundColor};"><span>${generatedAvatar.firstChar}</span></div>
+                                <span>${usersConnected[i]}</span>
+
+                                <button type="button" class="btn btn-primary btn-invite" onclick="sendInvitation('${usersConnected[i]}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 16">
+                                      <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                      <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
             }
-        }
-        document.querySelector(".list-users-connected").innerHTML = html;
+
+            document.querySelector(".list-users-connected").innerHTML = html;
+        })
     }
+
+}
+
+function sendInvitation(usernameInvitee){
+
+    fetch('/api/sendInvitation', {
+        method: "POST",
+        headers: {
+            "Content-Type": "text/vnd.turbo-stream.html"
+        },
+
+        body: JSON.stringify(usernameInvitee)
+    })
+        .then(response => response.text())
+        .then(html => {
+        console.log(html);
+    })
+        .catch(err => console.log(err));
+
 }
 
 //nel momento che clicchi per aprire la chat manda una chiamata api che torna tutti i messaggi in quella chat
@@ -292,5 +334,23 @@ async function getUsernameProducerById(producerId){
     } catch (error) {
         console.error('Errore nella richiesta:', error);
         throw error;
+    }
+}
+
+async function getUsersWithChat(){
+    try{
+        const response = await fetch('/api/getUsersWithChat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Errore nella richiesta:', error);
+        throw error;
+
     }
 }

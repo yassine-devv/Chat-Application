@@ -28,3 +28,14 @@ CREATE TABLE public.messages (
     CONSTRAINT fk_producer_mess FOREIGN KEY(producer) REFERENCES public.users(id),
     CONSTRAINT fk_chat_mess FOREIGN KEY(chat) REFERENCES public.chats(id)
 );
+
+CREATE TYPE status_invitation AS ENUM('PENDING', 'ACCEPTED', 'REFIUSED');
+
+CREATE TABLE public.invitations (
+    id SERIAL PRIMARY KEY,
+    inviter INT NOT NULL,
+    invitee INT NOT NULL,
+    status status_invitation NOT NULL,
+    CONSTRAINT fk_inviter FOREIGN KEY(inviter) REFERENCES public.users(id),
+    CONSTRAINT fk_invitee FOREIGN KEY(invitee) REFERENCES public.users(id)
+)
