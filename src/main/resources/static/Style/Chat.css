@@ -2,51 +2,80 @@
     padding: 0px;
 }
 
-.sec-left{
-    width: 25%;
-    border-right: 1px solid lightgray;
+.sec-left {
+    width: 15%;
+    /* border-right: 1px solid lightgray; */
+    height: 100%;
+    background-color: #1e2124;
+    overflow-y: auto;
 }
 
 #area-chat {
     display: flex;
     flex-direction: column;
-    width: 75%;
+    width: 65%;
 }
 
 div#sec-title-chats {
     padding-top: 5%;
     padding-bottom: 5%;
     padding-left: 12px;
-    border-bottom: 1px solid lightgray;
+    /* border-bottom: 1px solid lightgray; */
+    color: white;
 }
 
-.label-chat{
+.label-chat {
     padding-top: 3%;
     padding-bottom: 3%;
     padding-left: 12px;
-    border-bottom: 1px solid lightgray;
     font-size: medium;
+    display: flex;
+    align-items: center;
+    color: lightgray;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.label-chat:hover {
+    background-color: #424549;
+}
+
+.label-chat.active{
+    background-color: #424549;
 }
 
 .header-username {
     padding: 1% 2% 1% 2%;
-    border-bottom: 1px solid lightgray;
     font-size: medium;
     margin-bottom: auto;
+    color: lightgray;
+    background-color: #282b30;
 }
 
 .area-send-message {
     padding: 1%;
-    border-top: 1px solid lightgray;
+    background-color: #2a2b2e;
 }
 
 .area-send-message #message {
     border-radius: 7px;
     outline: none;
-    border: 1px solid lightgray;
+    border: none;
     padding: 7px;
     width: 95%;
     margin-right: 1%;
+    background-color: #424549;
+    color: lightgray;
+    box-shadow: rgb(0 0 0 / 20%) 0px 2px 8px 0px;
+}
+
+.area-send-message #message::placeholder {
+    color: lightgray;
+    opacity: 1; /* Firefox */
+}
+
+.area-send-message #message::-ms-input-placeholder { /* Edge 12-18 */
+    color: lightgray;
 }
 
 .area-send-message .message-submit {
@@ -56,8 +85,6 @@ div#sec-title-chats {
 }
 
 .producer-message {
-    border: 1px solid lightgray;
-    /* float: right; */
     width: fit-content;
     margin-left: auto;
     margin-right: 2%;
@@ -65,11 +92,13 @@ div#sec-title-chats {
     border-radius: 7px;
     margin-bottom: 0.5%;
     border-top-right-radius: 0px;
+    color: lightgray;
+    background-color: #36393e;
+    box-shadow: rgb(0 0 0 / 20%) 0px 8px 24px;
 }
 
+
 .consumer-message {
-    border: 1px solid lightgray;
-    /* float: right; */
     width: fit-content;
     margin-left: 2%;
     margin-right: auto;
@@ -77,10 +106,14 @@ div#sec-title-chats {
     border-radius: 7px;
     margin-bottom: 0.5%;
     border-top-left-radius: 0px;
+    color: lightgray;
+    background-color: #36393e;
+    box-shadow: rgb(0 0 0 / 20%) 0px 8px 24px;
 }
 
 #area-messages {
-    overflow-y: scroll;
+    overflow-y: auto;
+    scrollbar-color: #424549 #282b30;
 }
 
 form#sendMessageForm {
@@ -90,4 +123,8 @@ form#sendMessageForm {
 button.accent.message-submit {
     height: auto;
     padding: 10px;
+    color: lightgray;
+    background-color: #7289da;
+    border: none;
 }
+
