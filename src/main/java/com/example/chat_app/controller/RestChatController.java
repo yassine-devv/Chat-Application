@@ -82,6 +82,10 @@ public class RestChatController {
 
         System.out.println(Arrays.asList(allChats));
 
+        String[] arrColors = {"00CCCC","0066CC", "80FF00", "00FF00", "FF90CC", "CC6600"};
+
+        Random randomNumbers = new Random();
+
         String response = """
                 <turbo-stream action='update' target="all-chats">
                     <template>
@@ -89,11 +93,14 @@ public class RestChatController {
 
         if(!allChats.isEmpty()){
             for (HashMap<String, String> valuesSingleChat : allChats){
+                String firstCharUsername = String.valueOf(valuesSingleChat.get("username_user").toCharArray()[0]).toUpperCase();
+                System.out.println(firstCharUsername);
                 response += """
                 <div class="label-chat" id="%s" onclick="openChat(event)">
-                    <span id="idUser-%s">%s</span>
+                    <div class="image-profile" style="margin-right: 2%%; background-color: #%s;"><span>%s</span></div>
+                    %s
                 </div>
-            """.formatted(valuesSingleChat.get("idChat"), valuesSingleChat.get("idUser"), valuesSingleChat.get("username_user"));
+            """.formatted(valuesSingleChat.get("idChat"), arrColors[randomNumbers.nextInt(5)+1], firstCharUsername, valuesSingleChat.get("username_user"));
             }
         }else {
             response += """
@@ -218,4 +225,12 @@ public class RestChatController {
         return usernameList;
     }
 
+    @GetMapping(value = "/getYourUsername", produces = "application/json")
+    public List<String> getYourUsername(HttpSession session){
+        List<String> username = new ArrayList<>();
+
+        username.add(String.valueOf(session.getAttribute("username")));
+
+        return username;
+    }
 }

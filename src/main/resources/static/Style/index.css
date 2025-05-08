@@ -45,7 +45,7 @@ body {font-family: Arial;}
 
 .list-users-connected{
     height: 250px;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .image-profile {

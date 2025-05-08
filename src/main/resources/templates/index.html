@@ -18,6 +18,43 @@
 
 </head>
 <body>
+    <span style="display: none;" id="username-field" th:text="${username}"></span>
+    <div id="content-flex"> <!--div con display flex-->
+        <div class="sec-left"> <!--all chats-->
+            <div id="sec-title-chats">
+                <span id="title-chat">Chats</span>
+            </div>
+
+            <div id="all-chats"></div>
+        </div>
+
+        <div id="area-chat"></div><!--section center messages-->
+
+        <div class="sec-right"> <!--user connected and invitations-->
+            <div class="tab">
+                <button class="tablinks users-connected" onclick="openTab('UsersConnected')">
+                    <div id="icon-online"></div>
+                    Online
+                </button>
+                <button class="tablinks invitations" onclick="openTab('Invitations')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="gray" class="bi bi-person-fill-add" viewBox="0 0 16 16">
+                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                        <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                    </svg>
+                    Inviti
+                </button>
+            </div>
+
+            <div id="UsersConnected" class="tabcontent">
+                <div class="list-users-connected"></div>
+            </div>
+
+            <div id="Invitations" class="tabcontent"></div>
+        </div>
+    </div>
+
+
+    <!--
     <div class="tab">
         <button class="tablinks" onclick="openTab('UsersConnected')">Connessi</button>
         <button class="tablinks" onclick="openTab('Chat')">Chat</button>
@@ -47,9 +84,17 @@
         <div id="area-chat"></div>
     </div>
 
-    <div id="Inviti" class="tabcontent"></div>
+    <div id="Inviti" class="tabcontent"></div>-->
 
     <!--modal notifica-->
+
+    <div class="alert alert-success" role="alert">
+        <div class="alert-heading"></div><!--avatar con username-->
+        <p id="message-content"></p>
+        <hr>
+        <button type="button" class="btn btn-secondary btn-open-chat-modal" onclick="redirectToChat(event)">Vai alla chat</button>
+    </div>
+
     <div class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -74,7 +119,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
-    <script th:src="@{/js/app.js}"></script>
+    <!--<script th:src="@{/js/app.js}"></script>-->
+    <script th:src="@{/js/script.js}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
