@@ -10,9 +10,13 @@
     <input type="text" name="username-signup" id="input-username" placeholder="Username"/> <br>
 
     <label for="input-password">Password:</label>
-    <input type="password" name="password" id="input-password" placeholder="Password" /> <br>
+    <input type="password" name="password" id="input-password" placeholder="Password"/> <br>
 
-    <input type="submit" value="Login">
+    <input type="submit" value="Login"><br><br>
+
+    <a href="/login" >Login</a>
+
+    <span id="signup-error" style="color: red"></span>
 </form>
 
 <script>
@@ -30,7 +34,8 @@
         fetch('/signup', {
             method: 'POST',
             headers:{
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': "text/vnd.turbo-stream.html"
             },
             body: jsonData
         })

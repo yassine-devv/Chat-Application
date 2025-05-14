@@ -12,7 +12,9 @@
     <label for="input-password">Password:</label>
     <input type="password" name="password" id="input-password" placeholder="Password" /> <br>
 
-    <input type="submit" value="Login">
+    <input type="submit" value="Login"> <br><br>
+
+    <a href="/signup" >Registrati</a>
 
     <div class="dialog-row">
         <label th:if="${param.error}" th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}" style="color: red"></label>
