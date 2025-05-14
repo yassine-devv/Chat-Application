@@ -7,6 +7,7 @@ import com.example.chat_app.repository.MessageRepository;
 import com.example.chat_app.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,13 +160,13 @@ public class RestService {
         return result;
     }
 
-    public void saveInvitation(String usernameInvitee, HttpSession session) {
+    public Invitation saveInvitation(String idUserInvitee, HttpSession session) {
         /*
          * 1)estrarre l'oggetto user invitato
          * 2)estrarre l'oggetto user stesso
          * */
 
-        Optional<User> userInviteeObj = userService.findByUsername(usernameInvitee);
+        Optional<User> userInviteeObj = userService.findById(Long.parseLong(idUserInvitee));
 
         User userInvitee = null;
 
@@ -182,14 +183,138 @@ public class RestService {
             userInviter = userInviterObj.get();
         }
 
+        Invitation saved = null;
+
         if(userInviter != null && userInvitee != null){
             Invitation invitation = new Invitation();
             invitation.setInviter(userInviter);
             invitation.setInvitee(userInvitee);
             invitation.setStatus(Status.PENDING);
 
-            invitationRepository.save(invitation);
+            saved = invitationRepository.save(invitation);
         }
 
+        return saved;
+    }
+
+    // funzione che dati i due id degli utenti come parametri ritorna lo status dell'invito tra i due
+    public List<Object[]> getInvitation(Long idUser1, Long idUser2){
+        String sql = """
+                select i.id, invitee.username as invitee, inviter.username as inviter, i.status from invitations i
+                JOIN users inviter ON i.inviter = inviter.id
+                JOIN users invitee ON i.invitee = invitee.id where i.inviter = :idUser1 and i.invitee = :idUser2 or i.inviter = :idUser2 and i.invitee = :idUser1;
+                """;
+
+        // [0]id [1]invitee [2]inviter [3]status
+        List<Object[]> result = entityManager.createNativeQuery(sql)
+                .setParameter("idUser1", idUser1)
+                .setParameter("idUser2", idUser2)
+                .getResultList();
+
+        return result;
+    }
+
+    @Transactional
+    public int saveInvitation(Long id, String status){
+        /*
+        * UPDATE invitations i
+            SET status = 'PENDING'
+            WHERE i.id = 3;
+        * */
+
+        String sql = """
+                UPDATE invitations
+                SET status = :status
+                WHERE id = :id;
+                """;
+
+        int rowsUpdated = entityManager.createNativeQuery(sql)
+                .setParameter("status", status)
+                .setParameter("id", id)
+                .executeUpdate();
+
+        return rowsUpdated;
+    }
+
+    public Chat saveChat(){
+        Chat chat = new Chat();
+        chat.setPriv(true);
+
+        return chatRepository.save(chat);
+    }
+
+    @Transactional
+    public int addParticipantsToChat(Long idChat, Long idUser1, Long idUser2){
+        // insert into participants (id_user, id_chat) values (1, 1), (2, 1)
+        String sql = """
+                insert into participants (id_user, id_chat) values (?, ?), (?, ?)
+                """;
+
+        int rowsInserted = entityManager.createNativeQuery(sql)
+                .setParameter(1, idUser1)
+                .setParameter(2, idChat)
+                .setParameter(3, idUser2)
+                .setParameter(4, idChat)
+                .executeUpdate();
+
+        return rowsInserted;
+    }
+
+    public List<String> getCountPendingInvitations(Long id){
+        // select count(i.invitee) from invitations i  where i.status = 'PENDING' and i.invitee = 2
+        String sql = """
+                select count(i.invitee) from invitations i  where i.status = 'PENDING' and i.invitee = :id;
+                """;
+
+        // [0]id [1]invitee [2]inviter [3]status
+        List<String> result = entityManager.createNativeQuery(sql)
+                .setParameter("id", id)
+                .getResultList();
+
+        return result;
+    }
+
+    public List<Object[]> getAllPendingInvitations(Long id){
+        //select i.id, inviter, invitee, i.status from invitations i join users inviter ON i.inviter = inviter.id join users invitee ON i.invitee = invitee.id where i.invitee = 2 and i.status = 'PENDING';
+        String sql = """
+                select inviter.username as username_inviter, i.id as Id_invitation, inviter as id_inviter, invitee, i.status from invitations i join users inviter ON i.inviter = inviter.id join users invitee ON i.invitee = invitee.id where i.invitee = :id and i.status = 'PENDING';
+                """;
+
+        // [0]id [1]invitee [2]inviter [3]status
+        List<Object[]> result = entityManager.createNativeQuery(sql)
+                .setParameter("id", id)
+                .getResultList();
+
+        return result;
+    }
+
+    public List<HashMap<String, String>> formatResultAllInvitations(List<Object[]> allInvitations){
+        List<HashMap<String, String>> allInvitationsFormatted = new ArrayList<>();
+
+        for (Object[] chat : allInvitations){
+            HashMap<String, String> currentValuesInv = new HashMap<>();
+            for (int i=0; i<chat.length; i++){
+                switch (i){
+                    case 0:
+                        currentValuesInv.put("username_inviter", chat[i].toString());
+                        break;
+                    case 1:
+                        currentValuesInv.put("id_invitation", chat[i].toString());
+                        break;
+                    case 2:
+                        currentValuesInv.put("id_inviter", chat[i].toString());
+                        break;
+                    case 3:
+                        currentValuesInv.put("id_invitee", chat[i].toString());
+                        break;
+                    case 4:
+                        currentValuesInv.put("status", chat[i].toString());
+                        break;
+                }
+            }
+            allInvitationsFormatted.add(currentValuesInv);
+        }
+
+        return allInvitationsFormatted;
     }
 }

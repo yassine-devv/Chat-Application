@@ -33,14 +33,15 @@
             <div class="tab">
                 <button class="tablinks users-connected" onclick="openTab('UsersConnected')">
                     <div id="icon-online"></div>
-                    Online
+                    Utenti Connessi
                 </button>
                 <button class="tablinks invitations" onclick="openTab('Invitations')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="gray" class="bi bi-person-fill-add" viewBox="0 0 16 16">
                         <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                         <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
                     </svg>
-                    Inviti
+                    <span>Inviti</span>
+                    <span id="label-count-invitations">0</span>
                 </button>
             </div>
 
@@ -48,69 +49,20 @@
                 <div class="list-users-connected"></div>
             </div>
 
-            <div id="Invitations" class="tabcontent"></div>
-        </div>
-    </div>
-
-
-    <!--
-    <div class="tab">
-        <button class="tablinks" onclick="openTab('UsersConnected')">Connessi</button>
-        <button class="tablinks" onclick="openTab('Chat')">Chat</button>
-        <button class="tablinks" onclick="openTab('Inviti')">Inviti</button>
-    </div>
-
-    <div id="UsersConnected" class="tabcontent">
-        <span>Ciao </span><span id="username-field" th:text="${username}"></span>
-        <div class="child-tab-users-connected">
-            <div class="header-users-connected">
-                <span id="title-header">Utenti connessi</span>
-            </div>
-
-            <div class="list-users-connected"></div>
-        </div>
-    </div>
-
-    <div id="Chat" class="tabcontent">
-        <div class="sec-left">
-            <div id="sec-title-chats">
-                <span id="title-chat">Chats</span>
-            </div>
-
-            <div id="all-chats"></div>
-        </div>
-
-        <div id="area-chat"></div>
-    </div>
-
-    <div id="Inviti" class="tabcontent"></div>-->
-
-    <!--modal notifica-->
-
-    <div class="alert alert-success" role="alert">
-        <div class="alert-heading"></div><!--avatar con username-->
-        <p id="message-content"></p>
-        <hr>
-        <button type="button" class="btn btn-secondary btn-open-chat-modal" onclick="redirectToChat(event)">Vai alla chat</button>
-    </div>
-
-    <div class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="title-modal" style="display: flex; align-items: center; gap: 10px;"></div>
-                </div>
-
-                <div class="modal-body">
-                    <p id="modal-body"></p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-open-chat-modal" data-dismiss="modal" onclick="redirectToChat(event)">Vai alla chat</button>
-                </div>
+            <div id="Invitations" class="tabcontent">
+                <div class="list-all-invitations"></div>
             </div>
         </div>
     </div>
+
+    <!-- alert invitation-->
+    <div class="alert alert-secondary" id="invitation-notification" role="alert"></div>
+
+    <!--message notification-->
+    <dialog>
+        <div class="notification-header"></div>
+        <div class="notification-content"></div>
+    </dialog>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>

@@ -48,11 +48,15 @@ public class DirectListener {
                 }
             }
 
-            String topic = "/topic/user." + consumerUsername; //topic con l'username del consumer
+            if(consumerUsername != null){
+                String topic = "/topic/user." + consumerUsername; //topic con l'username del consumer
 
-            messagingTemplate.convertAndSend(topic, message);
+                messagingTemplate.convertAndSend(topic, message);
 
-            restService.saveMessage(message);
+                if(message.getTypeMessage().equals("CHAT")){
+                    restService.saveMessage(message);
+                }
+            }
 
             System.out.println("Messaggio ricevuto: "+message.toString());
 
