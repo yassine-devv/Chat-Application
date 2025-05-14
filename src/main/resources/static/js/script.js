@@ -390,3 +390,31 @@ async function getAllInvitations(){
         throw error;
     }
 }
+
+var limit = 2;
+var offset = 0;
+
+function loadMessages(offset) {
+    fetch('/api/actionOnInvitation', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ offset: offset })
+    })
+        .then(response => response.text())
+        .then(html => {
+            Turbo.renderStreamMessage(html);
+    })
+}
+
+const intersectionObserver = new IntersectionObserver(function (entries) {
+    console.log(entries);
+    if (entries[0].isIntersecting) {
+        loadMessages(offset);
+        offset = limit + 2;
+        console.log("Loaded new items");
+    }
+});
+// start observing
+intersectionObserver.observe(document.querySelector(".virtual"));

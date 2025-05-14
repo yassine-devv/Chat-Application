@@ -143,7 +143,8 @@ public class RestChatController {
             id = userObj.getId();
         }
 
-        List<Message> allMessagesInChat = restService.findMessagesByChatId(Long.parseLong(idChat));
+        //List<Message> allMessagesInChat = restService.findMessagesByChatId(Long.parseLong(idChat));
+        List<Message> allMessagesInChat = restService.findByChatIdWithPagination(Long.parseLong(idChat), 2, 0);
 
         String response = """
                 <turbo-stream action='update' target="area-chat">
@@ -152,9 +153,37 @@ public class RestChatController {
                                 <span id="consumer" class="label-username">%s</span>
                             </div>
                             <div id="area-messages">
+                            <div class="load">Carica</div>
                 """.formatted(usernameParticipant);
 
-        for(Message message : allMessagesInChat){
+        Iterator<Message> iterator = allMessagesInChat.iterator();
+        while (iterator.hasNext()) {
+            Message message = iterator.next();
+
+            String htmlWithProducerDetected = restService.detectProducerMessage(message.getProducer().getUsername(), usernameParticipant, String.valueOf(session.getAttribute("username")), message.getContent());
+
+            response += htmlWithProducerDetected;
+
+            if (!iterator.hasNext()) {
+                if((message.getProducer().getUsername()).equals(usernameParticipant)){
+                    response += """
+                    <div id="last-message" class="consumer-message">
+                        <span>%s</span><br>
+                    </div>
+                    """.formatted(message.getContent());
+                }
+
+                if((message.getProducer().getUsername()).equals(session.getAttribute("username"))){
+                    response += """
+                    <div id="last-message" class="producer-message">
+                        <span>%s</span><br>
+                    </div>
+                    """.formatted(message.getContent());
+                }
+            }
+        }
+
+        /*for(Message message : allMessagesInChat){
             if(message.getProducer().getUsername().equals(usernameParticipant)){
                 response += """
                     <div class="consumer-message">
@@ -170,7 +199,7 @@ public class RestChatController {
                     </div>
                     """.formatted(message.getContent());
             }
-        }
+        }*/
 
         response += """
                         </div>
@@ -509,5 +538,42 @@ public class RestChatController {
                 """;
 
         return ResponseEntity.ok().header("Content-Type", "text/vnd.turbo-stream.html").body(html);
+    }
+
+    @PostMapping(value = "/loadMessages", produces="text/vnd.turbo-stream.html")
+    public ResponseEntity<String> loadMessages(@RequestBody String json, HttpSession session){
+        //converto il json che mi arriva in stringa lo converto in hashmap
+        TypeReference<HashMap<String,String>> typeRef = new TypeReference<HashMap<String,String>>(){};
+
+        HashMap<String, String> jsonToMap = null;
+
+        String html = null;
+
+        try {
+            jsonToMap = objectMapper.readValue(json, typeRef);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(jsonToMap != null){
+            String offset = jsonToMap.get("offset");
+
+
+            html = """
+                    <turbo-stream action='update' target="area-messages">
+                        <template>
+                    """;
+
+
+
+            html += """
+                        </template>
+                    </turbo-stream>
+                    """;
+        }
+
+
+        //todo: finire offset e limit messaggi
+        return null;
     }
 }

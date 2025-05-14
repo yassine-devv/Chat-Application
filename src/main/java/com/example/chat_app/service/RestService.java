@@ -56,6 +56,10 @@ public class RestService {
         return messageRepository.findByChatId(id);
     }
 
+    public List<Message> findByChatIdWithPagination(Long chatId, int limit, int offset){
+        return messageRepository.findByChatIdWithPagination(chatId, limit, offset);
+    }
+
     public List<String> getParticipantsInChat(Long idChat){
         String sql = "SELECT u.username FROM users u INNER JOIN participants p on u.id = p.id_user WHERE p.id_chat = :idChat";
 
@@ -316,5 +320,27 @@ public class RestService {
         }
 
         return allInvitationsFormatted;
+    }
+
+    public String detectProducerMessage(String usernameProducer, String usernameParticipant, String usernameSession, String messageContent){
+        String response = null;
+
+        if(usernameProducer.equals(usernameParticipant)){
+            response += """
+                    <div class="consumer-message">
+                        <span>%s</span><br>
+                    </div>
+                    """.formatted(messageContent);
+        }
+
+        if(usernameProducer.equals(usernameSession)){
+            response += """
+                    <div class="producer-message">
+                        <span>%s</span><br>
+                    </div>
+                    """.formatted(messageContent);
+        }
+
+        return response;
     }
 }
